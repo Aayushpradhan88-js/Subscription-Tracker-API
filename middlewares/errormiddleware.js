@@ -7,7 +7,7 @@ const errorMiddleware = (err, req, res, next) => {
 
         console.log(error);
 
-        //MONGOOSE BAD OBJECTID
+        //MONGOOSE BAD OBJECT-ID
         if (err.name === 'CastError') {
             const message = 'Resource not found';
             error = new Error(message);
@@ -17,7 +17,7 @@ const errorMiddleware = (err, req, res, next) => {
         //MONGOOSE DUPLICATE KEY
         if (err.code === 11000) {
             const message = 'Duplicate field value entered';
-            error = new Error(message)
+            error = new Error(message);
             error.statusCode = 400;
         };
 
