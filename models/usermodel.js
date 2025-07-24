@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 
-const schema = mongoose.schema;
 
-const userModel = new schema({
+const userModel = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -21,7 +20,6 @@ const userModel = new schema({
         required: true,
         trim: true,
         minLength: [6, "Password must be at least 6 characters long"],
-        maxLength: [15, "Password must be at most 15 characters long"],
     }
 },
     {
