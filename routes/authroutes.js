@@ -1,14 +1,14 @@
 import { Router } from "express";
+import {
+    signUp,
+    signin
+} from "../controllers/authcontroller.js";
 
 const authroutes = Router();
 
-authroutes.get("/sign-up", (req, res) => {
-    res.send("sign-up");
-});
+authroutes.post("/sign-up", signUp);
 
-authroutes.get("/login", (req, res) => {
-    res.send("ljogin");
-});
+authroutes.post("/sign-in", signin);
 
 authroutes.get("/logout", (req, res) => {
     res.send("logout");
