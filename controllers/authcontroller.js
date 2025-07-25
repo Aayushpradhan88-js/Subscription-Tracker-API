@@ -120,4 +120,9 @@ export const signin = async (req, res) => {
         session.endSession();
         throw error;
     }
+};
+
+//LOG-OUT
+export const logout = async (req, res) => {
+    res.send("logout");
 }

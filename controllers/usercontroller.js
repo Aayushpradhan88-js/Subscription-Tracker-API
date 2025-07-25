@@ -30,20 +30,20 @@ export const getUsers = async (_, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const User = await User.findById(req.params.id);
-        if (!User) return res
+        const user = await User.findById(req.params.id).select("-password");
+        if (!user) return res
             .status(400)
             .json({
                 success: false,
-                message: "User not found"
+                message: "user not found"
             });
 
         res
             .status(200)
             .json({
                 success: true,
-                message: "User found",
-                data: User
+                message: "user found",
+                data: user
             });
     }
     catch (error) {
