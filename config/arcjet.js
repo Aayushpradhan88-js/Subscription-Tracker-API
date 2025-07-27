@@ -1,4 +1,5 @@
 import arcjet, { shield, detectBot, tokenBucket } from "@arcjet/node";
+// import {ARCJET_KEY, ARCJET_ENV} from "../config/env.js";
 
 const aj = arcjet({
 
@@ -6,6 +7,7 @@ const aj = arcjet({
     key: process.env.ARCJET_KEY,
     characteristics: ["ip.src"],
 
+    
     rules: [
         shield({ mode: "LIVE" }),
 
@@ -13,6 +15,7 @@ const aj = arcjet({
             mode: "LIVE",
             allow: [
                 "CATEGORY:SEARCH_ENGINE",
+                // { userAgent: /Postman/i },
             ],
         }),
 
@@ -24,5 +27,6 @@ const aj = arcjet({
         }),
     ],
 });
+console.log("arcject env = ",process.env.ARCJET_ENV)
 
 export default aj;

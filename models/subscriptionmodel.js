@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-const schema = mongoose.schema;
-
-const subscriptionModel = new schema(
+const subscriptionModel = mongoose.Schema(
     {
         name: {
             type: String,
@@ -14,18 +12,21 @@ const subscriptionModel = new schema(
             required: [true, 'subscription price is required'],
             min: [0, 'price must be greater than 0'],
         },
+
         currency: {
             type: String,
             enum: ['USD', 'EUR', 'INR', 'NPR'],
             default: 'USD'
         },
+
         frequency: {
             type: String,
             enum: ['daily', 'weekly', 'monthly', 'yearly']
         },
+
         category: {
             type: String,
-            enum: ['health', 'fitness', 'food', 'entertainment', 'education', 'technology', 'others'],
+            enum: ['health', 'fitness', 'food', 'Entertainment', 'education', 'technology', 'others'],
             required: 'true'
         },
         paymentMethod: {
@@ -39,27 +40,27 @@ const subscriptionModel = new schema(
             default: 'active'
         },
         startDate: {
-            type: String,
+            type: Date,
             required: true,
             validate: {
-                validator: function (value) {
-                    return value > Date.now();
-                },
+                validator: (value) => value <= new Date(),
+                message: 'start date must be in the past'
             }
         },
         renewalDate: {
             type: Date,
-            required: true,
             validate: {
                 validator: function (value) {
-                    return value >= this.startDate()
+                    return value > this.startDate()
                 },
-                message: 'Start dat e must be in the past'
+                message: 'Renewal date must be after the start date'
             }
         },
         user: {
-            type: mongoose.schema.Types.objectId,
-            ref: 'User'
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+            index: true,
         }
     },
     {
@@ -76,7 +77,7 @@ subscriptionModel.pre('save', function (next) {
             yearly: 365
         };
 
-        this.renewalDate = new Date(this.startDate());
+        this.renewalDate = new Date(this.startDate);
         this.renewalDate.setDate(this.renewalDate.getDate() + renewalPeriods[this.frequency]);
     }
 

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import {NODE_ENV} from "../config/env.js";
 
 const DB_URL="mongodb+srv://aayushjs:aayushjs12345@cluster0.uuqee4l.mongodb.net/"
-// const DB_NAME="subscriptiontracker";
 
 const dbConnection = async () => {
     try {
