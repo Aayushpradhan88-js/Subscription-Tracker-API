@@ -14,6 +14,7 @@ import subscriptionroutes from './routes/subscriptionroutes.js';
 
 import dbConnection from './db/db.js';
 import errorMiddleware from './middlewares/errormiddleware.js';
+import workflowroutes from './routes/upstashworkflowroutes.js';
 // import arcjetMiddleware from './middelewares/arcjetmiddleware.js';
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use('/api/v1/auth', authroutes);
 app.use('/api/v1/user', userroutes);
 app.use('/api/v1/subscriptions', subscriptionroutes);
+app.use('/api/v1/workflow', workflowroutes);
 
 app.use(errorMiddleware);
 

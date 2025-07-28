@@ -2,13 +2,13 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { serve } = require('@upstash/workflow/express');
 
-import Subscription from '../models/subscriptionmodel';
+import Subscription from '../models/subscriptionmodel.js';
 import dayjs from 'dayjs';
 
 const REMINDER = [7, 5, 2, 1];
 
 export const workflowReminder = serve(async (context) => {
-    const { subscriptionId } = context.requestPayload();
+    const { subscriptionId } = context.requestPayload;
 
     const subscription = await fetchSubscription(context, subscriptionId);
     if (!subscription || subscription.status !== 'active') {
@@ -25,15 +25,15 @@ export const workflowReminder = serve(async (context) => {
         const reminderDate = renewalDate.subtract(dayBefore, 'day');
 
         if (reminderDate.isBefore(dayjs())) {
-            await sleepUntilReminder(context, label:`Remainder ${dayBefore} day before` ,reminderDate)
+            await sleepUntilReminder(context, `Reminder ${dayBefore} days before`, reminderDate)
         };
 
-        await triggerReminder(context, label:`Remainder ${dayBefore} day before`);
+        await triggerReminder(context, `${dayBefore} days before`);
     }
 });
 
 const fetchSubscription = async (context, subscriptionId) => {
-    return await context.run('get subscription', () => {
+    return await context.run('get subscription', async() => {
         return Subscription.findById(subscriptionId).populate('user', 'name email')
     })
 };

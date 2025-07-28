@@ -1,8 +1,8 @@
 import express from "express";
 import { workflowReminder } from "../controllers/upstashworkflowcontroller.js";
 
-const upstashworkflowroutes = express.Router();
+const workflowroutes = express.Router();
 
-upstashworkflowroutes.post("/subscription/remainder", workflowReminder);
+workflowroutes.post("/subscription/remainder", workflowReminder);
 
-export default upstashworkflowroutes;
+export default workflowroutes;
