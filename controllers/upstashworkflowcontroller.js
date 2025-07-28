@@ -1,8 +1,9 @@
 import { createRequire } from 'module';
-import Subscription from '../models/subscriptionmodel';
-import dayjs from 'dayjs';
 const require = createRequire(import.meta.url);
 const { serve } = require('@upstash/workflow/express');
+
+import Subscription from '../models/subscriptionmodel';
+import dayjs from 'dayjs';
 
 const REMINDER = [7, 5, 2, 1];
 
@@ -10,7 +11,7 @@ export const workflowReminder = serve(async (context) => {
     const { subscriptionId } = context.requestPayload();
 
     const subscription = await fetchSubscription(context, subscriptionId);
-    if (!subscription || !subscription.status !== 'active') {
+    if (!subscription || subscription.status !== 'active') {
         return;
     }
 

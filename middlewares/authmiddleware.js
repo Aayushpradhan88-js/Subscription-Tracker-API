@@ -9,12 +9,12 @@ export const authMiddleware = async (req, res, next) => {
         if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
         }
-        console.log(token);
+        // console.log(token);
 
         if (!token) return next(401, "UNAUTHORIZED REQUEST: NO TOKEN PROVIDED");
          // eslint-disable-next-line no-undef
         const decode = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decode)
+        // console.log(decode)
 
         const user = await User.findById(decode.userId);
         if (!user) return res
