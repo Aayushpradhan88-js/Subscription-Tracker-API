@@ -27,6 +27,6 @@ const aj = arcjet({
         }),
     ],
 });
-console.log("arcject env = ",process.env.ARCJET_ENV)
+// console.log("arcject env = ",process.env.ARCJET_ENV)
 
 export default aj;

@@ -1,8 +1,7 @@
 import { Client as WorkflowClient } from "@upstash/workflow";
+import { QSTASH_URL, QSTASH_TOKEN } from './env.js'
 
 export const workflowClient = new WorkflowClient({
-    // eslint-disable-next-line no-undef
-    baseUrl: process.env.QSTASH_URL,
-    // eslint-disable-next-line no-undef
-    token: process.env.QSTASH_TOKEN
+    baseUrl: QSTASH_URL,
+    token: QSTASH_TOKEN
 });

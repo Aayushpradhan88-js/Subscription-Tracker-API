@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { accountMail, transporter } from '../config/nodemailer.js';
 import { emailTemplates } from './email-templete.js';
 
-export const mailTransporter = async ({ to, type, subscription }) => {
+export const sendRemainderEmail = async ({ to, type, subscription }) => {
     if (!type || !to) throw new Error("type and to are required!");
 
     const mailType = emailTemplates.find((mail) => mail.label === type);
