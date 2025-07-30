@@ -9,7 +9,7 @@ export const createSubscription = async (req, res) => {
             ...req.body,
             user: req.user._id
         });
-        console.log("successfully stored in database subscription data", req.body)
+        // console.log("successfully stored in database subscription data", req.body)
 
         const { workflowRunId } = await workflowClient.trigger({
             url: `${SERVER_URL}/api/v1/workflow/subscription/remainder`,
@@ -21,7 +21,8 @@ export const createSubscription = async (req, res) => {
             },
             retries: 2
         });
-        console.log(subscription);
+        // console.log(subs
+        // cription);
 
         return res
             .status(200)
@@ -33,7 +34,8 @@ export const createSubscription = async (req, res) => {
             })
     }
     catch (error) {
-        console.log("upstash failed",error);
+         console.log("upstash failed", error.response?.data || error.message || error);
+        console.log("upstash failed",error)
     }
 };
 

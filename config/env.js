@@ -9,6 +9,5 @@ export const {
     ARCJET_KEY, ARCJET_ENV,
     QSTASH_URL, QSTASH_TOKEN,
     MAIL_PASSWORD
-
     // eslint-disable-next-line no-undef
 } = process.env
