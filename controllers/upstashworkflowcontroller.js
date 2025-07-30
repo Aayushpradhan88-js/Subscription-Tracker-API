@@ -12,9 +12,7 @@ export const workflowReminder = serve(async (context) => {
     const { subscriptionId } = context.requestPayload;
 
     const subscription = await fetchSubscription(context, subscriptionId);
-    if (!subscription || subscription.status !== 'active') {
-        return;
-    }
+    if (!subscription || subscription.status !== 'active') return;
 
     const renewalDate = dayjs(subscription.renewalDate);
     if (renewalDate.isBefore(dayjs())) {
@@ -29,7 +27,7 @@ export const workflowReminder = serve(async (context) => {
             await sleepUntilReminder(context, `Reminder ${dayBefore} days before`, reminderDate)
         };
 
-        if(dayjs().isSame(reminderDate, 'day')){
+        if (dayjs().isSame(reminderDate, 'day')) {
             await triggerReminder(context, `${dayBefore} days before`, subscription);
         }
     }
@@ -47,7 +45,7 @@ const sleepUntilReminder = async (context, label, date) => {
 }
 
 const triggerReminder = async (context, label, subscription) => {
-    return await context.run(label, async() => {
+    return await context.run(label, async () => {
         console.log(`Triggering ${label} reminder`);
 
         await sendRemainderEmail({
