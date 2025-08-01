@@ -16,14 +16,14 @@ export const workflowReminder = serve(async (context) => {
 
     const renewalDate = dayjs(subscription.renewalDate);
     if (renewalDate.isBefore(dayjs())) {
-        console.log(`Renewal Date hasbeen passed for subscription ${subscriptionId}`);
+        console.log(`Renewal Date has been passed for subscription ${subscriptionId}`);
         return;
     }
 
-    for (let dayBefore of REMINDER) {
+    for (const dayBefore of REMINDER) {
         const reminderDate = renewalDate.subtract(dayBefore, 'day');
 
-        if (reminderDate.isBefore(dayjs())) {
+        if (reminderDate.isAfter(dayjs())) {
             await sleepUntilReminder(context, `Reminder ${dayBefore} days before`, reminderDate)
         };
 
@@ -53,5 +53,7 @@ const triggerReminder = async (context, label, subscription) => {
             type: label,
             subscription
         });
+
+        // console.log(user.email)
     })
 }

@@ -1,6 +1,6 @@
 import Subscription from "../models/subscriptionmodel.js"
 import { workflowClient } from "../config/upstash.js"
-import{SERVER_URL} from "../config/env.js";
+import { SERVER_URL } from "../config/env.js";
 
 //---------- CREATING SUBSCRIPTION---------- //
 export const createSubscription = async (req, res) => {
@@ -10,6 +10,7 @@ export const createSubscription = async (req, res) => {
             user: req.user._id
         });
         // console.log("successfully stored in database subscription data", req.body)
+
 
         const { workflowRunId } = await workflowClient.trigger({
             url: `${SERVER_URL}/api/v1/workflow/subscription/remainder`,
@@ -21,8 +22,7 @@ export const createSubscription = async (req, res) => {
             },
             retries: 2
         });
-        // console.log(subs
-        // cription);
+
 
         return res
             .status(200)
@@ -34,8 +34,8 @@ export const createSubscription = async (req, res) => {
             })
     }
     catch (error) {
-         console.log("upstash failed", error.response?.data || error.message || error);
-        console.log("upstash failed",error)
+        console.log("upstash failed", error.response?.data || error.message || error);
+        console.log("upstash failed", error)
     }
 };
 
