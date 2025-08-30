@@ -1,6 +1,6 @@
 import Subscription from "../models/subscriptionmodel.js"
-import { workflowClient } from "../config/upstash.js"
-import { SERVER_URL } from "../config/env.js";
+// import { workflowClient } from "../config/upstash.js"
+// import { SERVER_URL } from "../config/env.js";
 
 //---------- CREATING SUBSCRIPTION---------- //
 export const createSubscription = async (req, res) => {
@@ -12,16 +12,16 @@ export const createSubscription = async (req, res) => {
         // console.log("successfully stored in database subscription data", req.body)
 
 
-        const { workflowRunId } = await workflowClient.trigger({
-            url: `${SERVER_URL}/api/v1/workflow/subscription/remainder`,
-            body: {
-                subscriptionId: subscription._id
-            },
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            retries: 2
-        });
+        // const { workflowRunId } = await workflowClient.trigger({
+        //     url: `${SERVER_URL}/api/v1/workflow/subscription/remainder`,
+        //     body: {
+        //         subscriptionId: subscription._id
+        //     },
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     retries: 2
+        // });
 
 
         return res
@@ -29,7 +29,6 @@ export const createSubscription = async (req, res) => {
             .json({
                 data: {
                     subscription,
-                    workflowRunId
                 }
             })
     }
@@ -38,14 +37,10 @@ export const createSubscription = async (req, res) => {
         console.log("upstash failed", error)
     }
 };
-
-
-export const getUserSubscription = async (req, res) => {
+export const getUserSubscription = async (req, res, next) => {
     try {
         if (req.user.id !== req.params.id) {
-            const error = new error("You're not the valid user of this subscription");
-            error.status = 403;
-            throw error;
+            return next(new Error("You're not the valid user of this subscription"))
         };
 
         const subscription = await Subscription.find({ user: req.params.id });
@@ -56,8 +51,7 @@ export const getUserSubscription = async (req, res) => {
                 data: subscription
             })
     }
-
     catch (error) {
-        console.log(error);
+        console.log("failed to get error", error);
     };
 };

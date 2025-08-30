@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-
 import User from '../models/usermodel.js';
+import{JWT_SECRET} from '../config/env.js'
 
 export const authMiddleware = async (req, res, next) => {
     try {
@@ -9,12 +9,11 @@ export const authMiddleware = async (req, res, next) => {
         if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
         }
-        // console.log(token);
+        console.log(token);
 
-        if (!token) return next(401, "UNAUTHORIZED REQUEST: NO TOKEN PROVIDED");
-         // eslint-disable-next-line no-undef
-        const decode = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log(decode)
+        if (!token) return res.status(401).json({ success: false, message: "UNAUTHORIZED REQUEST: NO TOKEN PROVIDED" });
+        const decode = jwt.verify(token, JWT_SECRET);
+        console.log(decode)
 
         const user = await User.findById(decode.userId);
         if (!user) return res
@@ -23,12 +22,12 @@ export const authMiddleware = async (req, res, next) => {
 
         req.user = user;
 
+        console.log(user);
+
         next();
 
-    } catch (error) {
-        res
-            .status(500)
-            .json({ success: false,
-                 message: error.message });
+    } catch (error){
+        console.log("failed to check auth user", error);
+        return res.status(401).json({ success: false, message: "Invalid token" });
     }
 }

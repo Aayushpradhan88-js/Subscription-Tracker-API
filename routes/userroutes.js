@@ -9,10 +9,8 @@ userroutes.get("/", getUsers )
 
 userroutes.get("/:id", authMiddleware ,getUser );
 
-userroutes.delete("/:id", getUser );
+userroutes.delete("/:id", authMiddleware, (req, res) => {res.status(501).json({success: false, message: "Delete functionality not implemented yet"})});
 
-userroutes.patch("/:id", (req, res) => {res.send("edit user")});
-
-userroutes.post("/", (req, res) => {res.send("all users")});
+userroutes.patch("/:id", authMiddleware, (req, res) => {res.status(501).json({success: false, message: "Update functionality not implemented yet"})});
 
 export default userroutes

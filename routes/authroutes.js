@@ -1,7 +1,8 @@
 import { Router } from "express";
 import {
     signUp,
-    signin
+    signin,
+    logout
 } from "../controllers/authcontroller.js";
 
 const authroutes = Router();
@@ -10,8 +11,6 @@ authroutes.post("/sign-up", signUp);
 
 authroutes.post("/sign-in", signin);
 
-authroutes.get("/logout", (req, res) => {
-    res.send("logout");
-});
+authroutes.get("/logout",logout);
 
 export default authroutes;

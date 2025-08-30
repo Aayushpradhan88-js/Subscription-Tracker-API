@@ -1,19 +1,15 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-
 import jwt from 'jsonwebtoken';
+
+import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/env.js';
 
 import User from '../models/usermodel.js';
 
 //SIGN-UP
 export const signUp = async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
     try {
         const { name, email, password } = req.body;
-        // console.log(req.body);
-        const existingUser = await User.findOne({ email }).session(session);
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             const error = new Error('User already exists');
             error.statusCode = 409;
@@ -21,32 +17,22 @@ export const signUp = async (req, res) => {
         };
 
         const hashPassword = await bcrypt.hash(password, 10);
-
         const user = await User.create(
             [{
                 name,
                 email,
-                password: hashPassword
+                password: hashPassword,
             }],
-            { session }
         );
-
-        // console.log(req.body ,user);
-
         const token = jwt.sign(
             { userId: user[0]._id },
-            // eslint-disable-next-line no-undef
-            process.env.JWT_SECRET,
-            // eslint-disable-next-line no-undef
-            { expiresIn: process.env.JWT_EXPIRES_IN }
+            JWT_SECRET,
+            { expiresIn: JWT_EXPIRES_IN }
         );
         // console.log("token", token, JWT_EXPIRES_IN, JWT_SECRET);
 
-        const userData = await User.findById(user[0]._id).select("-password").session(session);
-
-        await session.commitTransaction();
-        session.endSession();
-
+        const userData = await User.findById(user[0]._id).select("-password");
+        
         res
             .status(201)
             .json({
@@ -59,19 +45,16 @@ export const signUp = async (req, res) => {
             });
 
     } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
+        console.log("sever failed to signup the user", error);
         throw error;
     }
 };
 
 //SIGN-IN
-export const signin = async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
+export const signin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
+        console.log(req.body)
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -79,6 +62,7 @@ export const signin = async (req, res) => {
             message.statusCode = 401;
             throw message;
         }
+        console.log(user);
 
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
@@ -91,19 +75,16 @@ export const signin = async (req, res) => {
             {
                 userId: user._id
             },
-            // eslint-disable-next-line no-undef
-            process.env.JWT_SECRET,
+            JWT_SECRET,
             {
-                // eslint-disable-next-line no-undef
-                expiresIn: process.env.JWT_EXPIRES_IN
+                expiresIn: JWT_EXPIRES_IN
             }
         );
 
-        const userData = await User.findById(user._id).select("-password").session(session);
-
-        await session.commitTransaction();
-        session.endSession();
-
+        const userData = await User.findById(user._id)
+        .select("-password")
+       
+        console.log(userData)
         res
             .status(200)
             .json({
@@ -116,10 +97,9 @@ export const signin = async (req, res) => {
             });
 
     } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
-    }
+        console.log("Failed to sign in", error);
+        next()
+    };
 };
 
 //LOG-OUT

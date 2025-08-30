@@ -42,10 +42,11 @@ export const sendRemainderEmail = async (req, res, { to, type, subscription }) =
             html: message,
         });
         console.log("User email is:", user.email);
-    } 
-    
+    }
+
     catch (error) {
-        console.log("server error", error)
+        console.log("Failed to send mail:", error.message);
+        throw error;
     }
     // transporter.sendMail(mailOptions, (error, info) => {
     //     if (error) console.log('Failed to send mail', error);

@@ -1,17 +1,16 @@
 import mongoose from "mongoose";
-import {NODE_ENV} from "../config/env.js";
+import { NODE_ENV } from "../config/env.js";
 
-const DB_URL="mongodb+srv://aayushpradhanjs:aayushpradhanjs12345@subscriptionapi.vmuh47m.mongodb.net/"
-
-const dbConnection = async () => {
+// const DB_NAME = "CRUDAPPLICATION"
+const MONGODB_URI =`mongodb://127.0.0.1:27017/premium-tracker`
+export const dbConnection = async () => {
     try {
-        const connectionString = await mongoose.connect(`${DB_URL}`);
-        return console.log(`MONGODB IS SUCCESSFULLY CONNECTED TO ${NODE_ENV} MODE`, connectionString);
+        const connectionString = await mongoose.connect(
+            `${MONGODB_URI}`
+        )
+        return console.log(`MONGODB IS SUCCESSFULLY CONNECTED TO ${NODE_ENV} MODE`);
     } catch (error) {
-        console.log(DB_URL);
-        console.log("MONGODB CONNECTION IS FAILED", error)
-        process.exit(1);
+        console.log("MONGODB CONNECTION IS FAILED", error.message)
+        process.exit(1)
     }
-};
-
-export default dbConnection;
+}
