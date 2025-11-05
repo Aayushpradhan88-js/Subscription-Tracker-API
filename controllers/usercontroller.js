@@ -58,7 +58,7 @@ export const getUser = async (req, res) => {
 
 export const deleteUser = async(req, res) => {
     try {
-        const deletedId = await User.findByIdAndDelete(req.parama.id);
+        const deletedId = await User.findByIdAndDelete(req.params.id);
 
         if(deletedId) {
             return res
@@ -69,7 +69,7 @@ export const deleteUser = async(req, res) => {
                 });
         }
     } catch (error) {
-        conosle.log(error.message);
+        console.log(error.message);
         return res
         .status(500)
         .json(
@@ -78,4 +78,9 @@ export const deleteUser = async(req, res) => {
             }
         )
     }
+}
+
+export const editUser = async(req, res) => {
+
+    
 }

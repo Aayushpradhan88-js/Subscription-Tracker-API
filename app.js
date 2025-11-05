@@ -26,6 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // app.use(arcjetMiddleware)
+
 app.use('/api/v1/auth', authroutes);
 app.use('/api/v1/user', userroutes);
 app.use('/api/v1/subscriptions', subscriptionroutes);
