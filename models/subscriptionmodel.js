@@ -53,7 +53,7 @@ const subscriptionSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 /*
-@calculating renewalDate 
+         @calculating renewalDate 
 */
 subscriptionSchema.pre('save', function(next) {
     if (this.isModified('startDate') || this.isModified('frequency') || !this.renewalDate) {
