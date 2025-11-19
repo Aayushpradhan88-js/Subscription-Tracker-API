@@ -5,9 +5,8 @@ const MONGODB_URI = `mongodb://127.0.0.1:27017/premium-tracker`;
 export const dbConnection = async () => {
     try {
         await mongoose.connect(`${MONGODB_URI}`);
-        return console.log(`MONGODB IS SUCCESSFULLY CONNECTED TO ${NODE_ENV} MODE`);
+        return console.log(`database is successfully connected in ${NODE_ENV} mode`);
     } catch (error) {
-        console.error("MONGODB CONNECTION IS FAILED", error.stack)
-        process.exit(1);
+        console.error("failed to connect database", error.stack);
     };
 };

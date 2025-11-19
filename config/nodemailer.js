@@ -1,16 +1,15 @@
 import nodemailer from 'nodemailer';
 import { MAIL_PASSWORD } from './env.js'
 import User from '../models/userModel.js';
-import dayjs from 'dayjs';
 import Subscription from '../models/subscriptionModel.js';
+import dayjs from 'dayjs';
 
 async function modelData(email) {
-    const foundUser = await User.findOne().where({ email })
-    console.log("foundUser", foundUser)
-    if (!foundUser) return null
+    const foundUser = await User.findOne().where({ email });
+    if (!foundUser) return null;
+
     const subscription = await Subscription.findOne().where({ user: foundUser._id })
-    console.log("subscription", subscription)
-    if (!subscription) return null
+    if (!subscription) return null;
     return {
         username: foundUser.name,
         subscriptionName: subscription?.name,
@@ -22,7 +21,6 @@ async function modelData(email) {
 };
 
 export const accountEmail = "aayushpradhan789@gmail.com";
-
 export const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -32,11 +30,12 @@ export const transporter = nodemailer.createTransport({
 });
 export const sendMail = async (receiverEmail) => {
     const datas = await modelData(receiverEmail)
-    if (!datas) return null
+    if (!datas) return null;
+
     const mailOptions = {
         from: accountEmail,
         to: receiverEmail,
-        subject: 'Test Email',
+        subject: 'Subscription Plan',
         html: `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f4f7fa;">
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -99,10 +98,14 @@ export const sendMail = async (receiverEmail) => {
     };
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent:', info.response);
+        if (!info) {
+            const unsuccessfulInfo = "failed to send mail"
+            return unsuccessfulInfo;
+        };
+
         return true;
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Error sending email:', error.stack);
         return false;
-    }
-}
+    };
+};

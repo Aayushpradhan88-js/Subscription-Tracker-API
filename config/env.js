@@ -9,4 +9,4 @@ export const {
     ARCJET_KEY, ARCJET_ENV,
     MAIL_PASSWORD
     // eslint-disable-next-line no-undef
-} = process.env
+} = process.env;
