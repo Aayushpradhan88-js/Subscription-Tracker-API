@@ -66,6 +66,7 @@ export const generateEmailTemplate = ({
 </div>
 `;
 
+//Main UI 
 export const emailTemplates = [
     {
         label: "7 days before reminder",
