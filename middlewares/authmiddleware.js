@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
-import { JWT_SECRET } from '../config/env.js'
+import { JWT_SECRET } from '../config/env.js';
 
 const authMiddleware = async (req, res, next) => {
     let token;
@@ -26,12 +26,12 @@ const authMiddleware = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        return res.status(401).json({
+        return res.status(500).json({
             success: false,
-            message: "Invalid token",
-            error: error.stack
+            error: error.stack,
+            message: "Invalid token"
         });
-    }
+    };
 };
 
 export default authMiddleware;
