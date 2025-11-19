@@ -7,8 +7,6 @@ import User from "../models/userModel.js";
 //----------Getting all subscriptions of specific user-----//
 const getAllSubscriptionOfUserId = async (req, res) => {
     const subscriptionUserId = req.params.id || req.user._id;
-    console.log(subscriptionUserId);
-    console.log("userid", req.user._id)
     //if ID is valid
     if (!mongoose.Types.ObjectId.isValid(subscriptionUserId)) {
         return res.status(400).json({
@@ -41,7 +39,7 @@ const getAllSubscriptionOfUserId = async (req, res) => {
             count: `You're total subscriptions ${subscriptions.length}`,
             data: subscriptions,
             message: "Successfully fetched all subscriptions"
-        })
+        });
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -54,6 +52,14 @@ const getAllSubscriptionOfUserId = async (req, res) => {
 //----------Creating subscription---------- //
 const createSubscription = async (req, res) => {
     const subscriptionUserId = req.params.id || req.user.id;
+    //if ID is valid
+    if (!mongoose.Types.ObjectId.isValid(subscriptionUserId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid user ID'
+        });
+    }
+    
     const { name, price, currency, frequency, category, startDate, paymentMethod } = req.body;
     if (
         [name, price, currency, frequency, category, startDate, paymentMethod].some((fields) => fields.trim === '')
@@ -64,13 +70,6 @@ const createSubscription = async (req, res) => {
         })
     };
 
-    //if ID is valid
-    if (!mongoose.Types.ObjectId.isValid(subscriptionUserId)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid user ID'
-        });
-    }
 
     //trying to access other user subscriptions
     if (req.user.id !== subscriptionUserId) {
@@ -143,4 +142,68 @@ const getSubscriptionWithId = async (req, res, next) => {
     };
 };
 
-export { getAllSubscriptionOfUserId, getSubscriptionWithId, createSubscription }
+//----------Update subscription with id---------- //
+const updateSubscriptionWithId = async (req, res) => {
+    const subscriptionUserId = req.params.id;
+    //if ID is valid
+    if (!mongoose.Types.ObjectId.isValid(subscriptionUserId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid user ID'
+        });
+    };
+
+    //trying to access other user subscriptions
+    if (req.user.id.toString() !== subscriptionUserId.toString()) {
+        return res.status(403).json({
+            success: false,
+            message: 'Access denied'
+        });
+    };
+
+    const { name, price, currency, frequency, category, startDate, paymentMethod } = req.body;
+    if (
+        [name, price, currency, frequency, category, startDate, paymentMethod].some((fields) => fields.trim === '')
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "All fields are required"
+        })
+    };
+    try {
+        const updateSubscription = await Subscription.findByIdAndUpdate(subscriptionUserId, {
+            name,
+            price,
+            currency,
+            frequency,
+            category,
+            startDate,
+            paymentMethod
+        });
+        if (!updateSubscription) {
+            return res.status(500).json({
+                success: false,
+                message: "Database error"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: updateSubscription,
+            message: "updated subscription successfully"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.stack
+        });
+    };
+};
+
+export {
+    getAllSubscriptionOfUserId,
+    getSubscriptionWithId,
+    createSubscription,
+    updateSubscriptionWithId
+};

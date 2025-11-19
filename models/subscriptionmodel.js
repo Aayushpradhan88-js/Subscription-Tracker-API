@@ -27,6 +27,7 @@ const subscriptionModel = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
+        enum: ['esewa','khalti','card', 'paypal', 'bank_transfer'],
         required: true,
         trim: true
     },

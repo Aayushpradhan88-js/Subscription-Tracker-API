@@ -10,7 +10,7 @@ import { PORT } from './config/env.js';
 
 import authroutes from './routes/authroutes.js';
 import userroutes from './routes/userroutes.js';
-import subscriptionroutes from './routes/subscriptionroutes.js';
+import subscriptionroutes from './routes/subscriptionRoutes.js';
 import workflowroutes from './routes/upstashworkflowroutes.js';
 
 import errorMiddleware from './middlewares/errormiddleware.js';
