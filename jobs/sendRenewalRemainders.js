@@ -8,7 +8,6 @@ const sendRenewalRemainders = async () => {
 
     const today = dayjs().startOf("day");
     const remindersToSend = [];
-
     try {
         const activeSubscriptions = await Subscription.find({
             status: "active",
