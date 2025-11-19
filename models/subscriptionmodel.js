@@ -52,6 +52,9 @@ const subscriptionSchema = new mongoose.Schema({
         }
 }, { timestamps: true });
 
+/*
+@calculating renewalDate 
+*/
 subscriptionSchema.pre('save', function(next) {
     if (this.isModified('startDate') || this.isModified('frequency') || !this.renewalDate) {
         const days = { daily: 1, weekly: 7, monthly: 30, yearly: 365 };
