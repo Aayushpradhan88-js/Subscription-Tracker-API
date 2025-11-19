@@ -1,5 +1,4 @@
 // import nodemailer from 'nodemailer';
-// import { MAIL_PASSWORD } from './env.js'
 import User from '../models/userModel.js';
 import Subscription from '../models/subscriptionModel.js';
 import dayjs from 'dayjs';
@@ -43,27 +42,27 @@ export const accountEmail = "aayushpradhan789@gmail.com";
 const resend = new Resend(RESEND_KEY);
 
 export const transporter = {
-  sendMail: async (mailOptions) => {
-    try {
-      const { error } = await resend.emails.send({
-        from: "SuperAgent <onboarding@resend.dev>",  // Free plan mein yehi allowed hai
-        to: mailOptions.to,
-        subject: mailOptions.subject,
-        html: mailOptions.html,
-        // reply_to: "support@yourapp.com",  // optional
-      });
+    sendMail: async (mailOptions) => {
+        try {
+            const { error } = await resend.emails.send({
+                from: "SuperAgent <onboarding@resend.dev>",  
+                to: mailOptions.to,
+                subject: mailOptions.subject,
+                html: mailOptions.html,
+                // reply_to: "support@yourapp.com",  //optional
+            });
 
-      if (error) {
-        console.error("Resend Error:", error);
-        throw error;
-      }
+            if (error) {
+                console.error("Resend Error:", error);
+                throw error;
+            };
 
-      console.log(`Email successfully sent to ${mailOptions.to}`);
-    } catch (err) {
-      console.error("Failed to send email via Resend:", err);
-      throw err;
-    }
-  },
+            console.log(`Email successfully sent to ${mailOptions.to}`);
+        } catch (err) {
+            console.error("Failed to send email via Resend:", err);
+            throw err;
+        };
+    },
 };
 
 export const sendMail = async (receiverEmail) => {
@@ -134,6 +133,7 @@ export const sendMail = async (receiverEmail) => {
 </div>
     `
     };
+    
     try {
         const info = await transporter.sendMail(mailOptions);
         if (!info) {
