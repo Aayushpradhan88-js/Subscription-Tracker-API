@@ -5,13 +5,12 @@ import {
     deleteUser,
     editUser
 } from "../controllers/userController.js"
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import authMiddleware  from "../middlewares/authMiddleware.js";
 
 const userroutes = Router();
+userroutes.route("/").get(getUsers);
+userroutes.route("/:id").get(authMiddleware,getUser);
+userroutes.route("/:id").delete(authMiddleware,deleteUser);
+userroutes.route("/:id").patch(authMiddleware,editUser);
 
-userroutes.get("/", getUsers )
-userroutes.get("/:id", authMiddleware ,getUser );
-userroutes.delete("/:id", authMiddleware, deleteUser);
-userroutes.patch("/:id", authMiddleware, editUser);
-
-export default userroutes
+export default userroutes;

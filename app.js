@@ -15,7 +15,7 @@ import workflowroutes from './routes/upstashworkflowroutes.js';
 
 import errorMiddleware from './middlewares/errormiddleware.js';
 // import arcjetMiddleware from './middelewares/arcjetmiddleware.js';
-import { dbConnection } from './db/db.js';
+import dbConnection from './config/db.js';
 import { sendMail } from './config/nodemailer.js';
 
 const app = express();
