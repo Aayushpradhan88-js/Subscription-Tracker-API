@@ -224,6 +224,7 @@ const deleteSubscriptionWithId = async (req, res) => {
     }
 };
 
+//----------Cancel subscription with id---------- //
 const cancelSubscriptionWithId = async (req, res) => {
     const subscriptionId = req.params.subscriptionId;
     const loggedInUser = req.user._id;
@@ -233,35 +234,47 @@ const cancelSubscriptionWithId = async (req, res) => {
             message: 'Invalid user ID'
         });
     };
+    try {
 
-    const subscription = await Subscription.findOne({
-        subscriptionId,
-        loggedInUser
-    });
-    if(!subscription){
-        return res.status(400).json({
-            success: false,
-            message: "subscription not found"
+        const subscription = await Subscription.findOne({
+            subscriptionId,
+            loggedInUser
         });
-    };
+        if (!subscription) {
+            return res.status(400).json({
+                success: false,
+                message: "subscription not found"
+            });
+        };
 
-    subscription.status = "cancelled";
-    subscription.cancelledAt = new Date();
+        //@cancellation status 
+        subscription.status = "cancelled";
+        subscription.cancelledAt = new Date();
 
-    await subscription.save();
+        await subscription.save();
 
-    return res.status(200).json({
-        success: true,
-        data: subscription,
-        message: "subscription cancelled!!"
-    })
+        return res.status(200).json({
+            success: true,
+            data: subscription,
+            message: "subscription cancelled!!"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.stack
+        });
+    }
 
 }
+
+
 
 export {
     getAllSubscriptionOfUserId,
     getSubscriptionWithId,
     createSubscription,
     updateSubscriptionWithId,
-    deleteSubscriptionWithId
+    deleteSubscriptionWithId,
+    cancelSubscriptionWithId
 };

@@ -6,7 +6,8 @@ import {
     getSubscriptionWithId,
     createSubscription,
     updateSubscriptionWithId,
-    deleteSubscriptionWithId
+    deleteSubscriptionWithId,
+    cancelSubscriptionWithId
 } from "../controllers/subscriptionController.js";
 
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTFkNzA5ZTAwOGFjNzgwOWJiZTYwODAiLCJpYXQiOjE3NjM1MzcwNTQsImV4cCI6MTc2NjEyOTA1NH0.eoeuzNkCmjR14GbHeF5htVteMiFGYEeT7EAMa2yN6vI
@@ -25,7 +26,7 @@ router
     .patch(updateSubscriptionWithId)
     .delete(deleteSubscriptionWithId);
 
-router.route("/:subscriptionId/cancel").put("CANCELLING user subscriptions");
+router.route("/:subscriptionId/cancel").patch(cancelSubscriptionWithId);
 
 // router.route("/up-comming renewals").put("RENEWALS user subscriptions");
 // 
