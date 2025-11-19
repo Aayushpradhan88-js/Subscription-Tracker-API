@@ -1,8 +1,10 @@
 import Subscription from "../models/subscriptionModel.js"
 import mongoose from "mongoose";
+import User from "../models/userModel.js";
 // import { workflowClient } from "../config/upstash.js"
 // import { SERVER_URL } from "../config/env.js";
 
+//----------Getting all subscriptions of specific user-----//
 const getAllSubscriptionOfUserId = async (req, res) => {
     const subscriptionUserId = req.params.id || req.user._id;
     console.log(subscriptionUserId);
@@ -23,12 +25,10 @@ const getAllSubscriptionOfUserId = async (req, res) => {
         });
     };
     try {
-
         // const subscriptions = await Subscription.findOne({userId: subscriptionUserId});//not working
         const subscriptions = await Subscription
             .find({ user: new mongoose.Types.ObjectId(subscriptionUserId) })
-            .sort({ createdAt: -1 }); //@.sort - for new values to show first
-        console.log(subscriptions);
+            .sort({ createdAt: -1 }); //@.sort - for new values to show first   //gpt code working why
         if (!subscriptions || subscriptions.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -51,7 +51,7 @@ const getAllSubscriptionOfUserId = async (req, res) => {
     }
 };
 
-//---------- CREATING SUBSCRIPTION---------- //
+//----------Creating subscription---------- //
 const createSubscription = async (req, res) => {
     const subscriptionUserId = req.params.id || req.user.id;
     const { name, price, currency, frequency, category, startDate, paymentMethod } = req.body;
@@ -107,11 +107,11 @@ const createSubscription = async (req, res) => {
             });
         };
 
-        const user = await Subscription.findOne({ name: req.user.id })
+        const user = await User.findById(req.user.id);
         return res.status(200).json({
             success: true,
             data: subscription,
-            message: `${user} your're subscription is added in dashboard`
+            message: `${user.name} your're subscription is added in dashboard`
         });
     } catch (error) {
         return res.status(500).json({
