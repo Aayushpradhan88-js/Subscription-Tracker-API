@@ -7,10 +7,12 @@ import {
     createSubscription
 } from "../controllers/subscriptionController.js";
 
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTFkNzA5ZTAwOGFjNzgwOWJiZTYwODAiLCJpYXQiOjE3NjM1MzcwNTQsImV4cCI6MTc2NjEyOTA1NH0.eoeuzNkCmjR14GbHeF5htVteMiFGYEeT7EAMa2yN6vI
+
 const subscriptionroutes = Router();
-subscriptionroutes.route("/").get(authMiddleware, getAllSubscriptionOfUserId);
-subscriptionroutes.route("/").post(authMiddleware, createSubscription)
-subscriptionroutes.route("/user/:id").get(authMiddleware, getSubscriptionWithId)
+subscriptionroutes.route("/:userid").get(authMiddleware, getAllSubscriptionOfUserId);
+subscriptionroutes.route("/:id").post(authMiddleware, createSubscription)
+subscriptionroutes.route("/:id").get(authMiddleware, getSubscriptionWithId)
 subscriptionroutes.patch("/:id", (req, res) => res.send("EDITING user subscriptions"));
 subscriptionroutes.delete("/", (req, res) => res.send("Deleteing user subscriptions"));
 subscriptionroutes.put("/:id/cancel", (req, res) => res.send("CANCELLING user subscriptions"));

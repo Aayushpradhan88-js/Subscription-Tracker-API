@@ -23,7 +23,7 @@ const getAllSubscriptionOfUserId = async (req, res) => {
     };
     try {
 
-        const subscriptions = await Subscription.find(subscriptionUserId);
+        const subscriptions = await Subscription.find({ subscriptionId: subscriptionUserId });
         if (!subscriptions) {
             return res.status(404).json({
                 success: false,
@@ -47,38 +47,63 @@ const getAllSubscriptionOfUserId = async (req, res) => {
 };
 
 //---------- CREATING SUBSCRIPTION---------- //
- const createSubscription = async (req, res) => {
+const createSubscription = async (req, res) => {
+    const subscriptionUserId = req.params.id || req.user.id;
+    const { name, price, currency, frequency, category, startDate, paymentMethod } = req.body;
+    if (
+        [name, price, currency, frequency, category, startDate, paymentMethod].some((fields) => fields.trim === '')
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "All fields are required"
+        })
+    };
+
+    //if ID is valid
+    if (!mongoose.Types.ObjectId.isValid(subscriptionUserId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid user ID'
+        });
+    }
+
+    //trying to access other user subscriptions
+    if (req.user.id !== subscriptionUserId) {
+        return res.status(403).json({
+            success: false,
+            message: 'Access denied'
+        });
+    };
     try {
         const subscription = await Subscription.create({
-            ...req.body,
-            user: req.user._id
+            name,
+            price,
+            currency,
+            frequency,
+            category,
+            startDate,
+            paymentMethod,
+            user: req.user.id
         });
-        // console.log("successfully stored in database subscription data", req.body)
+        if (!subscription) {
+            return res.status(500).json({
+                sucess: false,
+                message: "failed to create subscription"
+            });
+        };
 
-
-        // const { workflowRunId } = await workflowClient.trigger({
-        //     url: `${SERVER_URL}/api/v1/workflow/subscription/remainder`,
-        //     body: {
-        //         subscriptionId: subscription._id
-        //     },
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     retries: 2
-        // });
-
-
-        return res
-            .status(200)
-            .json({
-                data: {
-                    subscription,
-                }
-            })
-    }
-    catch (error) {
-        console.log("upstash failed", error.response?.data || error.message || error);
-        console.log("upstash failed", error)
+        const user = await Subscription.findOne(subscriptionUserId, { name })
+        return res.status(200).json({
+            success: true,
+            data: subscription,
+            message: `${user.name} your're subscription is added in dashboard`
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.stack
+        });
     }
 };
 
@@ -103,4 +128,4 @@ const getSubscriptionWithId = async (req, res, next) => {
     };
 };
 
-export {getAllSubscriptionOfUserId, getSubscriptionWithId, createSubscription}
+export { getAllSubscriptionOfUserId, getSubscriptionWithId, createSubscription }

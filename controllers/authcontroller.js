@@ -36,11 +36,11 @@ export const signUp = async (req, res) => {
             .status(201)
             .json({
                 success: true,
-                message: 'User created successfully',
                 data: {
                     token,
                     User: userData
-                }
+                },
+                message: 'User created successfully'
             });
 
     } catch (error) {

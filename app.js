@@ -29,7 +29,7 @@ app.use(cookieParser());
 
 app.use('/api/v1/auth', authroutes);
 app.use('/api/v1/user', userroutes);
-app.use('/api/v1/subscriptions', subscriptionroutes);
+app.use('/api/v1/subscriptions/user', subscriptionroutes);
 app.use('/api/v1/workflow', workflowroutes);
 
 app.use(errorMiddleware);
