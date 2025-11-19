@@ -59,7 +59,7 @@ const createSubscription = async (req, res) => {
             message: 'Invalid user ID'
         });
     }
-    
+
     const { name, price, currency, frequency, category, startDate, paymentMethod } = req.body;
     if (
         [name, price, currency, frequency, category, startDate, paymentMethod].some((fields) => fields.trim === '')
@@ -144,52 +144,34 @@ const getSubscriptionWithId = async (req, res, next) => {
 
 //----------Update subscription with id---------- //
 const updateSubscriptionWithId = async (req, res) => {
-    const subscriptionUserId = req.params.id;
-    //if ID is valid
-    if (!mongoose.Types.ObjectId.isValid(subscriptionUserId)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid user ID'
-        });
-    };
-
-    //trying to access other user subscriptions
-    if (req.user.id.toString() !== subscriptionUserId.toString()) {
-        return res.status(403).json({
-            success: false,
-            message: 'Access denied'
-        });
-    };
-
-    const { name, price, currency, frequency, category, startDate, paymentMethod } = req.body;
-    if (
-        [name, price, currency, frequency, category, startDate, paymentMethod].some((fields) => fields.trim === '')
-    ) {
-        return res.status(400).json({
-            success: false,
-            message: "All fields are required"
-        })
-    };
     try {
-        const updateSubscription = await Subscription.findByIdAndUpdate(subscriptionUserId, {
-            name,
-            price,
-            currency,
-            frequency,
-            category,
-            startDate,
-            paymentMethod
-        });
-        if (!updateSubscription) {
-            return res.status(500).json({
-                success: false,
-                message: "Database error"
-            });
-        }
+        const subscriptionId = req.params.id || req.params.subscriptionId;
+        const userId = req.user.id;
 
+        if (!mongoose.Types.ObjectId.isValid(subscriptionId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid ID"
+            });
+        };
+
+        const subscription = await Subscription.findOne({
+            _id: subscriptionId,
+            user: userId
+        });
+        if (!subscription) {
+            return res.status(404).json({
+                success: false,
+                message: "Subscription not found"
+            });
+        };
+
+        Object.assign(subscription, req.body);
+
+        await subscription.save();
         return res.status(200).json({
             success: true,
-            data: updateSubscription,
+            data: subscription,
             message: "updated subscription successfully"
         });
     } catch (error) {
@@ -201,9 +183,85 @@ const updateSubscriptionWithId = async (req, res) => {
     };
 };
 
+//----------Delete subscription with id---------- //
+const deleteSubscriptionWithId = async (req, res) => {
+    const subscriptionId = req.params.id || req.params.subscriptionId;
+    const loggedInUser = req.user._id;
+
+    if (!mongoose.Types.ObjectId.isValid(subscriptionId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid user ID'
+        });
+    };
+
+    try {
+        //@verifying user through loggedInUser
+        const subscription = await Subscription.findOne({
+            _id: subscriptionId,
+            user: loggedInUser
+        });
+        if (!subscription) {
+            return res.status(404).json({
+                success: false,
+                message: "Subscription not found"
+            });
+        };
+
+        const deleteSubscription = await Subscription.findByIdAndDelete(subscriptionId);
+        if (!deleteSubscription) res.json("failed to delete subscription");
+
+        return res.status(200).json({
+            success: true,
+            message: "successfully deleted subscription"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.stack
+        });
+    }
+};
+
+const cancelSubscriptionWithId = async (req, res) => {
+    const subscriptionId = req.params.subscriptionId;
+    const loggedInUser = req.user._id;
+    if (!mongoose.Types.ObjectId.isValid(subscriptionId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid user ID'
+        });
+    };
+
+    const subscription = await Subscription.findOne({
+        subscriptionId,
+        loggedInUser
+    });
+    if(!subscription){
+        return res.status(400).json({
+            success: false,
+            message: "subscription not found"
+        });
+    };
+
+    subscription.status = "cancelled";
+    subscription.cancelledAt = new Date();
+
+    await subscription.save();
+
+    return res.status(200).json({
+        success: true,
+        data: subscription,
+        message: "subscription cancelled!!"
+    })
+
+}
+
 export {
     getAllSubscriptionOfUserId,
     getSubscriptionWithId,
     createSubscription,
-    updateSubscriptionWithId
+    updateSubscriptionWithId,
+    deleteSubscriptionWithId
 };

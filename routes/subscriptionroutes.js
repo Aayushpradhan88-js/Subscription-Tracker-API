@@ -1,26 +1,32 @@
-import { Router } from "express";
+import express from "express";
 
 import authMiddleware from "../middlewares/authMiddleware.js";
-import { 
+import {
     getAllSubscriptionOfUserId,
     getSubscriptionWithId,
     createSubscription,
-    updateSubscriptionWithId
+    updateSubscriptionWithId,
+    deleteSubscriptionWithId
 } from "../controllers/subscriptionController.js";
 
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTFkNzA5ZTAwOGFjNzgwOWJiZTYwODAiLCJpYXQiOjE3NjM1MzcwNTQsImV4cCI6MTc2NjEyOTA1NH0.eoeuzNkCmjR14GbHeF5htVteMiFGYEeT7EAMa2yN6vI
 
-const subscriptionroutes = Router();
-subscriptionroutes.route("/:userid").get(authMiddleware, getAllSubscriptionOfUserId);
+const router = express.Router();
+router.use(authMiddleware);
 
-subscriptionroutes.route("/:userid").post(authMiddleware, createSubscription)
+router
+    .route("/user/:userId")
+    .get(getAllSubscriptionOfUserId)
+    .post(createSubscription)
+    .get(getSubscriptionWithId)
 
-subscriptionroutes.route("/:userid").get(authMiddleware, getSubscriptionWithId)
+router
+    .route("/:subscriptionId")
+    .patch(updateSubscriptionWithId)
+    .delete(deleteSubscriptionWithId);
 
-subscriptionroutes.route("/:userid").patch(authMiddleware, updateSubscriptionWithId);
+router.route("/:subscriptionId/cancel").put("CANCELLING user subscriptions");
 
-subscriptionroutes.delete("/", (req, res) => res.send("Deleteing user subscriptions"));
-subscriptionroutes.put("/:id/cancel", (req, res) => res.send("CANCELLING user subscriptions"));
-subscriptionroutes.put("/up-comming renewals", (req, res) => res.send("RENEWALS user subscriptions"));
-
-export default subscriptionroutes;
+// router.route("/up-comming renewals").put("RENEWALS user subscriptions");
+// 
+export default router;
