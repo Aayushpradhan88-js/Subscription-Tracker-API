@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { MAIL_PASSWORD } from './env.js'
+// import { MAIL_PASSWORD } from './env.js'
 import User from '../models/userModel.js';
 import Subscription from '../models/subscriptionModel.js';
 import dayjs from 'dayjs';
@@ -15,19 +15,27 @@ async function modelData(email) {
         subscriptionName: subscription?.name,
         renewalDate: dayjs(subscription?.renewalDate).format('MMM D, YYYY'),
         planName: subscription?.name,
-        price: `${subscription?.currency} ${subscription?.price} (${subscription?.frequency}`,
+        price: `${subscription?.currency} ${subscription?.price} (${subscription?.frequency})`,
         paymentMethod: subscription?.paymentMethod
     }
 };
 
-export const accountEmail = "aayushpradhan789@gmail.com";
 export const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: accountEmail,
-        pass: MAIL_PASSWORD
-    }
-});
+    // service: 'gmail',
+    // auth: {
+        //     user: accountEmail,
+        //     pass: MAIL_PASSWORD
+        // }
+        
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
+        secure: false,
+        auth:{
+            user: "9712b316211f85",
+            pass: "838993d76456f1"
+        }
+    });
+    export const accountEmail = "aayushpradhan789@gmail.com";
 export const sendMail = async (receiverEmail) => {
     const datas = await modelData(receiverEmail)
     if (!datas) return null;

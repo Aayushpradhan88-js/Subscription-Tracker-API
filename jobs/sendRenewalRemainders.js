@@ -4,6 +4,8 @@ import { transporter, accountEmail } from "../config/nodemailer.js";
 import dayjs from "dayjs";
 
 const sendRenewalRemainders = async () => {
+
+    console.log("email is sending..............")
     const today = dayjs().startOf('day');
     const remaindersToSend = [];
 
@@ -43,13 +45,15 @@ const sendRenewalRemainders = async () => {
             };
             const html = tempelate.generateBody(mailData);
             const subject = tempelate.generateSubject(mailData);
-
+            
             await transporter.sendMail({
                 from: `"SuperAgent"<${accountEmail}>`,
                 to: susubscription.user.email,
                 subject: subject,
                 html
             });
+            
+            console.log("job done.....")
         };
     } catch (error) {
         console.error("Reminder job failed:", error.stack);
