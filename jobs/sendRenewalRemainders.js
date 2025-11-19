@@ -4,10 +4,10 @@ import { transporter, accountEmail } from "../config/nodemailer.js";
 import dayjs from "dayjs";
 
 const sendRenewalRemainders = async () => {
+    console.log("Running renewal reminder job...");
 
-    console.log("email is sending..............")
-    const today = dayjs().startOf('day');
-    const remaindersToSend = [];
+    const today = dayjs().startOf("day");
+    const remindersToSend = [];
 
     try {
         const activeSubscriptions = await Subscription.find({
@@ -15,49 +15,59 @@ const sendRenewalRemainders = async () => {
         }).populate("user", "name email");
 
         for (const subscription of activeSubscriptions) {
-            const renewal = dayjs(subscription.renewalDate).startOf('day');
-            const daysLeft = renewal.diff(today, 'day');
 
-            //if renewal days remains less than 7 days - email send
-            if ([1, 2, 5, 7].includes(daysLeft)) {
-                const tempelateLabel = `${daysLeft} days before remainder`;
-                remaindersToSend.push({
+            const renewal = dayjs(subscription.renewalDate || subscription.nextRenewalDate).startOf("day");
+            const daysLeft = renewal.diff(today, "day");
+
+            console.log(`${subscription.user.email} - ${subscription.name} → ${daysLeft} days left`);
+
+            if ([1, 2, 3, 5, 7].includes(daysLeft) && daysLeft > 0) {
+                const templateLabel = `${daysLeft} days before remainder`;
+                remindersToSend.push({
                     subscription,
                     daysLeft,
-                    tempelateLabel
+                    templateLabel,
                 });
-            }
+            };
         };
 
-        //Loop for email sending
-        for (const { susubscription, daysLeft, tempelateLabel } of remaindersToSend) {
-            const tempelate = emailTemplates.find(t => t.label === tempelateLabel);
-            if (!tempelate) continue;
+        // Send emails
+        for (const { subscription, daysLeft } of remindersToSend) {
+            const template = emailTemplates.find(t =>
+                t.label.toLowerCase().includes(`${daysLeft} day`) ||
+                t.label.toLowerCase().includes(`${daysLeft} days`)
+            );
+            if (!template) { console.log(`No template for ${daysLeft} days → using fallback`) }
 
             const mailData = {
-                userName: susubscription.user.name,
-                subscriptionName: susubscription.name,
-                renewalDate: susubscription.renewal.format('MMM D, YYY'),
-                planName: susubscription.name,
-                price: `${susubscription.currency} ${susubscription.price} (${susubscription.frequency})`,
-                paymentMethod: susubscription.paymentMethod,
-                daysLeft
+                userName: subscription.user.name,
+                subscriptionName: subscription.name,
+                renewalDate: dayjs(subscription.renewalDate || subscription.nextRenewalDate).format("MMM D, YYYY"),
+                planName: subscription.name,
+                price: `${subscription.currency} ${subscription.price} (${subscription.frequency})`,
+                paymentMethod: subscription.paymentMethod || "Not specified",
+                daysLeft,
             };
-            const html = tempelate.generateBody(mailData);
-            const subject = tempelate.generateSubject(mailData);
-            
-            await transporter.sendMail({
-                from: `"SuperAgent"<${accountEmail}>`,
-                to: susubscription.user.email,
-                subject: subject,
-                html
-            });
-            
-            console.log("job done.....")
+
+            const html = template.generateBody(mailData);
+            const subject = template.generateSubject(mailData);
+
+            try {
+                await transporter.sendMail({
+                    from: `"SuperAgent" <${accountEmail}>`,
+                    to: subscription.user.email,
+                    subject,
+                    html,
+                });
+                console.log(`Reminder sent to ${subscription.user.email} (${daysLeft} days left)`);
+            } catch (mailError) {
+                console.error(`Failed to send email to ${subscription.user.email}:`, mailError);
+            };
         };
+        console.log(`Renewal reminder job completed. Sent ${remindersToSend.length} emails.`);
     } catch (error) {
-        console.error("Reminder job failed:", error.stack);
-    }
-}
+        console.error("Renewal reminder job failed:", error);
+    };
+};
 
 export default sendRenewalRemainders;
