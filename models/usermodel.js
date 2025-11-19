@@ -25,12 +25,8 @@ const userModel = new mongoose.Schema({
         ref: 'Subscription',
         index: true,
     }]
-},
-    {
-        timestamps: true,
-    }
+}, { timestamps: true, }
 );
 
-const User = mongoose.model('Users', userModel)
-
+const User = mongoose.model('Users', userModel);
 export default User;
