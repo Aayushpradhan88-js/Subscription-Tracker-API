@@ -1,10 +1,9 @@
 import Subscription from "../models/subscriptionModel.js"
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
-// import { workflowClient } from "../config/upstash.js"
-// import { SERVER_URL } from "../config/env.js";
 
-//----------Getting all subscriptions of specific user-----//
+
+//----------Getting all subscriptions of specific user---------- //
 const getAllSubscriptionOfUserId = async (req, res) => {
     const subscriptionUserId = req.params.id || req.user._id;
     //if ID is valid
@@ -23,10 +22,9 @@ const getAllSubscriptionOfUserId = async (req, res) => {
         });
     };
     try {
-        // const subscriptions = await Subscription.findOne({userId: subscriptionUserId});//not working
         const subscriptions = await Subscription
             .find({ user: new mongoose.Types.ObjectId(subscriptionUserId) })
-            .sort({ createdAt: -1 }); //@.sort - for new values to show first   //gpt code working why
+            .sort({ createdAt: -1 }); //@.sort - for new values to show first  
         if (!subscriptions || subscriptions.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -58,7 +56,7 @@ const createSubscription = async (req, res) => {
             success: false,
             message: 'Invalid user ID'
         });
-    }
+    };
 
     const { name, price, currency, frequency, category, startDate, paymentMethod } = req.body;
     if (
@@ -67,7 +65,7 @@ const createSubscription = async (req, res) => {
         return res.status(400).json({
             success: false,
             message: "All fields are required"
-        })
+        });
     };
 
 
@@ -118,12 +116,11 @@ const createSubscription = async (req, res) => {
             message: 'Server error',
             error: error.stack
         });
-    }
+    };
 };
 
 //----------SUBSCRIPTION with id---------- //
 const getSubscriptionWithId = async (req, res, next) => {
-
     try {
         if (req.user.id !== req.params.id) {
             return next(new Error("You're not the valid user of this subscription"))
@@ -131,14 +128,17 @@ const getSubscriptionWithId = async (req, res, next) => {
 
         const subscription = await Subscription.find({ user: req.params.id });
 
-        return res
-            .status(200)
-            .json({
-                data: subscription
-            })
-    }
-    catch (error) {
-        console.log("failed to get error", error);
+        return res.status(200).json({
+            success: true,
+            data: subscription,
+            message: "successfully fetched subscription"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.stack
+        });
     };
 };
 
@@ -221,7 +221,7 @@ const deleteSubscriptionWithId = async (req, res) => {
             message: 'Server error',
             error: error.stack
         });
-    }
+    };
 };
 
 //----------Cancel subscription with id---------- //
@@ -235,7 +235,6 @@ const cancelSubscriptionWithId = async (req, res) => {
         });
     };
     try {
-
         const subscription = await Subscription.findOne({
             _id: subscriptionId,
             user: loggedInUser
@@ -247,12 +246,12 @@ const cancelSubscriptionWithId = async (req, res) => {
             });
         };
 
-        if(subscription.status === "cancelled"){
+        if (subscription.status === "cancelled") {
             return res.status(403).json({
-                success: false, 
+                success: false,
                 message: "Cannot cancel expired subscription"
-            })
-        }
+            });
+        };
 
         //@cancellation status 
         subscription.status = "cancelled";
@@ -271,11 +270,8 @@ const cancelSubscriptionWithId = async (req, res) => {
             message: 'Server error',
             error: error.stack
         });
-    }
-
+    };
 };
-
-
 
 export {
     getAllSubscriptionOfUserId,

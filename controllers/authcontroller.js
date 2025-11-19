@@ -1,10 +1,13 @@
 import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/env.js';
+import {
+    JWT_EXPIRES_IN,
+    JWT_SECRET
+} from '../config/env.js';
 
-//SIGN-UP
-export const signUp = async (req, res) => {
+//----------Register User---------- //
+const signUp = async (req, res) => {
     const { name, email, password } = req.body;
     try {
         const existingUser = await User.findOne({ email });
@@ -42,14 +45,14 @@ export const signUp = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "internal server error",
-            error: error.stack
+            error: error.stack,
+            message: "internal server error"
         });
-    }
+    };
 };
 
-//SIGN-IN
-export const signin = async (req, res) => {
+//----------Login user---------- //
+const signin = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
@@ -57,7 +60,7 @@ export const signin = async (req, res) => {
             const message = new Error('Invalid email address');
             message.statusCode = 401;
             throw message;
-        }
+        };
 
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
@@ -73,26 +76,26 @@ export const signin = async (req, res) => {
         const userData = await User.findById(user._id).select("-password");
         res.status(200).json({
             success: true,
-            message: 'User logged in successfully',
             data: {
                 token,
                 User: userData
-            }
+            },
+            message: 'User logged in successfully'
         });
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "internal server error",
-            error: error.stack
+            error: error.stack,
+            message: "internal server error"
         });
     };
 };
 
-//LOG-OUT
-export const logout = async (req, res) => {
+//----------Logout user---------- //
+const logout = async (req, res) => {
     try {
         res.clearCookie("token", {
-            httpOnly: true, 
+            httpOnly: true,
             sameSite: 'strict'
         })
         res.status(200).json({
@@ -101,9 +104,15 @@ export const logout = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
-            success:false,
-            message: "internal server error",
-            error: error.stack
+            success: false,
+            error: error.stack,
+            message: "internal server error"
         });
     };
+};
+
+export {
+    signUp,
+    signin,
+    logout
 };

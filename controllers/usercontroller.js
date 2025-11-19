@@ -1,90 +1,76 @@
 import User from "../models/userModel.js";
 
+//----------Get All DB Users---------//
 const getUsers = async (_, res) => {
     try {
         const users = await User.find();
-        if (!users) return res
-            .status(400)
-            .json({
-                success: false,
-                message: "Users not found"
-            });
+        if (!users) return res.status(400).json({
+            success: false,
+            message: "Users not found"
+        });
 
-        res
-            .status(200)
-            .json({
-                success: true,
-                message: "Users found",
-                data: users
-            });
-    }
-    catch (error) {
-        res
-            .status(500)
-            .json({
-                success: false,
-                message: error.message
-            });
-    }
+        return res.status(200).json({
+            success: true,
+            data: users,
+            message: "fetched all users successfully"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.stack
+        });
+    };
 };
 
+//----------Get user with ID---------//
 const getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).select("-password");
-        // if (!user) return res
-        //     .status(400)
-        //     .json({
-        //         success: false,
-        //         message: "user not found"
-        //     });
+        const user = await User
+            .findById(req.params.id)
+            .select("-password");
+        if (!user) return res.status(400).json({
+            success: false,
+            message: "user not found"
+        });
 
-        res
-            .status(200)
-            .json({
-                success: true,
-                message: "user found",
-                data: user
-            });
-    }
-    catch (error) {
-        res
-            .status(500)
-            .json({
-                success: false,
-                message: error.message
-            });
-    }
-}
+        return res.status(200).json({
+            success: true,
+            data: user,
+            message: "user found"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    };
+};
 
+//----------Delete user with ID---------//
 const deleteUser = async (req, res) => {
     try {
         const deletedId = await User.findByIdAndDelete(req.params.id);
         if (deletedId) {
-            return res
-                .status(200)
-                .json({
-                    success: true,
-                    message: "User deleted successfully"
-                });
-        }
+            return res.status(200).json({
+                success: true,
+                message: "User deleted successfully"
+            });
+        };
     } catch (error) {
-        console.log(error.message);
-        return res
-            .status(500)
-            .json(
-                {
-                    message: error.message
-                }
-            )
-    }
-}
+        return res.status(500).json({
+            message: "internal server error",
+            error: error.message
+        })
+    };
+};
 
+//----------Edit user with ID---------//
 const editUser = async (req, res) => {
     const id = req.params.id;
     if (!id) {
         return res.send(404).json({
             messege: "Invalid id"
-        })
+        });
     };
     const { name, email } = req.body;
 
