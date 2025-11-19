@@ -13,5 +13,4 @@ userroutes.route("/:userid").get(authMiddleware,getUser);
 userroutes.route("/:userid").delete(authMiddleware,deleteUser);
 userroutes.route("/:userid").patch(authMiddleware,editUser);
 
-
 export default userroutes;
