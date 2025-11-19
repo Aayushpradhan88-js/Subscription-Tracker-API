@@ -237,8 +237,8 @@ const cancelSubscriptionWithId = async (req, res) => {
     try {
 
         const subscription = await Subscription.findOne({
-            subscriptionId,
-            loggedInUser
+            _id: subscriptionId,
+            user: loggedInUser
         });
         if (!subscription) {
             return res.status(400).json({
@@ -246,6 +246,13 @@ const cancelSubscriptionWithId = async (req, res) => {
                 message: "subscription not found"
             });
         };
+
+        if(subscription.status === "cancelled"){
+            return res.status(403).json({
+                success: false, 
+                message: "Cannot cancel expired subscription"
+            })
+        }
 
         //@cancellation status 
         subscription.status = "cancelled";
@@ -266,7 +273,7 @@ const cancelSubscriptionWithId = async (req, res) => {
         });
     }
 
-}
+};
 
 
 

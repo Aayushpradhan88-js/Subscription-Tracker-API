@@ -32,7 +32,6 @@ export const sendRemainderEmail = async (req, res, { to, type, subscription }) =
         await transporter.sendMail({
             from: accountEmail,
             to: user.email,
-            // to: to,
             subject: subject,
             html: message,
         });
