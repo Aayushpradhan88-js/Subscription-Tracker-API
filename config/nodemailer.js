@@ -1,16 +1,16 @@
 import nodemailer from 'nodemailer';
 import { MAIL_PASSWORD } from './env.js'
-import User from '../models/usermodel.js';
+import User from '../models/userModel.js';
 import dayjs from 'dayjs';
-import Subscription from '../models/subscriptionmodel.js';
+import Subscription from '../models/subscriptionModel.js';
 
 async function modelData(email) {
     const foundUser = await User.findOne().where({ email })
-    console.log("foundUser",foundUser)
+    console.log("foundUser", foundUser)
     if (!foundUser) return null
     const subscription = await Subscription.findOne().where({ user: foundUser._id })
-    console.log("subscription",subscription)
-    if(!subscription) return null
+    console.log("subscription", subscription)
+    if (!subscription) return null
     return {
         username: foundUser.name,
         subscriptionName: subscription?.name,
@@ -32,7 +32,7 @@ export const transporter = nodemailer.createTransport({
 });
 export const sendMail = async (receiverEmail) => {
     const datas = await modelData(receiverEmail)
-    if (!datas ) return null
+    if (!datas) return null
     const mailOptions = {
         from: accountEmail,
         to: receiverEmail,
@@ -97,7 +97,7 @@ export const sendMail = async (receiverEmail) => {
 </div>
     `
     };
-   try {
+    try {
         const info = await transporter.sendMail(mailOptions);
         console.log('Email sent:', info.response);
         return true;

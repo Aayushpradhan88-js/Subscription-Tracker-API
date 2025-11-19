@@ -3,14 +3,14 @@ import {
     signUp,
     signin,
     logout
-} from "../controllers/authcontroller.js";
+} from "../controllers/authController.js";
 
 const authroutes = Router();
 
-authroutes.post("/sign-up", signUp);
+authroutes.route("/sign-up").post(signUp);
 
-authroutes.post("/sign-in", signin);
+authroutes.route("/sign-in").post(signin);
 
-authroutes.get("/logout",logout);
+authroutes.route("/logout").get(logout);
 
 export default authroutes;

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { NODE_ENV } from "../config/env.js";
+import { NODE_ENV } from "./env.js";
 
 // const DB_NAME = "CRUDAPPLICATION"
 const MONGODB_URI =`mongodb://127.0.0.1:27017/premium-tracker`

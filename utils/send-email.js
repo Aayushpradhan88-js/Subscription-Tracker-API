@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { accountEmail, transporter } from '../config/nodemailer.js';
 import { emailTemplates } from './email-templete.js';
-import User from "../models/usermodel.js"
+import User from "../models/userModel.js"
 
 export const sendRemainderEmail = async (req, res, { to, type, subscription }) => {
     if (!type || !to) throw new Error("Missing parameters type and to are required!");
@@ -17,22 +17,17 @@ export const sendRemainderEmail = async (req, res, { to, type, subscription }) =
         planName: subscription.name,
         price: `${subscription.currency} ${subscription.price} (${subscription.frequency})`,
         paymentMethod: subscription.paymentMethod,
-    }
+    };
 
     const message = tempelate.generateBody(mailInfo);
     const subject = tempelate.generateSubject(mailInfo);
     const user = await User.findById(req.user._id);
     if (!user) {
-        res
-            .status(301)
-            .json(
-                {
-                    message: "User not found"
-                }
-            )
-    }
+        return res.status(301).json({
+            message: "User not found"
+        });
+    };
 
-    console.log("User email is:", user.email);
     try {
         await transporter.sendMail({
             from: accountEmail,
@@ -41,16 +36,15 @@ export const sendRemainderEmail = async (req, res, { to, type, subscription }) =
             subject: subject,
             html: message,
         });
-        console.log("User email is:", user.email);
-    }
-
-    catch (error) {
-        console.log("Failed to send mail:", error.message);
-        throw error;
+    } catch (error) {
+        return res.send(403).json({
+            message: "internal server error",
+            error: error.stack
+        })
     }
     // transporter.sendMail(mailOptions, (error, info) => {
     //     if (error) console.log('Failed to send mail', error);
 
     //     console.log('Email send: ', info.response)
     // })
-}
+};

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/env.js';
 
-import User from '../models/usermodel.js';
+import User from '../models/userModel.js';
 
 //SIGN-UP
 export const signUp = async (req, res) => {
@@ -32,7 +32,7 @@ export const signUp = async (req, res) => {
         // console.log("token", token, JWT_EXPIRES_IN, JWT_SECRET);
 
         const userData = await User.findById(user[0]._id).select("-password");
-        
+
         res
             .status(201)
             .json({
@@ -82,8 +82,8 @@ export const signin = async (req, res, next) => {
         );
 
         const userData = await User.findById(user._id)
-        .select("-password")
-       
+            .select("-password")
+
         console.log(userData)
         res
             .status(200)

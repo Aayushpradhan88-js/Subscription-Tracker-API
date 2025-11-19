@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/usermodel.js';
-import{JWT_SECRET} from '../config/env.js'
+import User from '../models/userModel.js';
+import { JWT_SECRET } from '../config/env.js'
 
 export const authMiddleware = async (req, res, next) => {
     try {
@@ -26,7 +26,7 @@ export const authMiddleware = async (req, res, next) => {
 
         next();
 
-    } catch (error){
+    } catch (error) {
         console.log("failed to check auth user", error);
         return res.status(401).json({ success: false, message: "Invalid token" });
     }

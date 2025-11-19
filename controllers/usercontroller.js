@@ -1,4 +1,4 @@
-import User from "../models/usermodel.js";
+import User from "../models/userModel.js";
 
 export const getUsers = async (_, res) => {
     try {
@@ -56,11 +56,11 @@ export const getUser = async (req, res) => {
     }
 }
 
-export const deleteUser = async(req, res) => {
+export const deleteUser = async (req, res) => {
     try {
         const deletedId = await User.findByIdAndDelete(req.params.id);
 
-        if(deletedId) {
+        if (deletedId) {
             return res
                 .status(200)
                 .json({
@@ -71,16 +71,11 @@ export const deleteUser = async(req, res) => {
     } catch (error) {
         console.log(error.message);
         return res
-        .status(500)
-        .json(
-            {
-                message: error.message
-            }
-        )
+            .status(500)
+            .json(
+                {
+                    message: error.message
+                }
+            )
     }
-}
-
-export const editUser = async(req, res) => {
-
-    
 }
