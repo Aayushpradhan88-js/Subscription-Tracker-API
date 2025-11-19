@@ -90,5 +90,20 @@ export const signin = async (req, res) => {
 
 //LOG-OUT
 export const logout = async (req, res) => {
-        
-}
+    try {
+        res.clearCookie("token", {
+            httpOnly: true, 
+            sameSite: 'strict'
+        })
+        res.status(200).json({
+            success: true,
+            message: "User logout successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success:false,
+            message: "internal server error",
+            error: error.stack
+        });
+    };
+};
