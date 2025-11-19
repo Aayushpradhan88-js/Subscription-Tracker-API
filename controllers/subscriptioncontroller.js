@@ -4,8 +4,9 @@ import mongoose from "mongoose";
 // import { SERVER_URL } from "../config/env.js";
 
 const getAllSubscriptionOfUserId = async (req, res) => {
-    const subscriptionUserId = req.params.id || req.user.id;
-
+    const subscriptionUserId = req.params.id || req.user._id;
+    console.log(subscriptionUserId);
+    console.log("userid", req.user._id)
     //if ID is valid
     if (!mongoose.Types.ObjectId.isValid(subscriptionUserId)) {
         return res.status(400).json({
@@ -15,7 +16,7 @@ const getAllSubscriptionOfUserId = async (req, res) => {
     }
 
     //trying to access other user subscriptions
-    if (req.user.id !== subscriptionUserId) {
+    if (req.user.id.toString() !== subscriptionUserId.toString()) {
         return res.status(403).json({
             success: false,
             message: 'Access denied'
@@ -23,8 +24,12 @@ const getAllSubscriptionOfUserId = async (req, res) => {
     };
     try {
 
-        const subscriptions = await Subscription.find({ subscriptionId: subscriptionUserId });
-        if (!subscriptions) {
+        // const subscriptions = await Subscription.findOne({userId: subscriptionUserId});//not working
+        const subscriptions = await Subscription
+            .find({ user: new mongoose.Types.ObjectId(subscriptionUserId) })
+            .sort({ createdAt: -1 }); //@.sort - for new values to show first
+        console.log(subscriptions);
+        if (!subscriptions || subscriptions.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "No subscriptions found"
@@ -75,6 +80,16 @@ const createSubscription = async (req, res) => {
         });
     };
     try {
+        const isSubsriptionExisted = await Subscription.findOne({ name: name, user: req.user.id });
+        if (isSubsriptionExisted) {
+            if (isSubsriptionExisted.active === 'active') {
+                return res.status(402).json({
+                    success: false,
+                    message: `this subscription ${name} is already existed in dashboard`
+                });
+            };
+        };
+
         const subscription = await Subscription.create({
             name,
             price,
@@ -92,11 +107,11 @@ const createSubscription = async (req, res) => {
             });
         };
 
-        const user = await Subscription.findOne(subscriptionUserId, { name })
+        const user = await Subscription.findOne({ name: req.user.id })
         return res.status(200).json({
             success: true,
             data: subscription,
-            message: `${user.name} your're subscription is added in dashboard`
+            message: `${user} your're subscription is added in dashboard`
         });
     } catch (error) {
         return res.status(500).json({
@@ -107,7 +122,7 @@ const createSubscription = async (req, res) => {
     }
 };
 
-//---------- CREATING SUBSCRIPTION---------- //
+//----------SUBSCRIPTION with id---------- //
 const getSubscriptionWithId = async (req, res, next) => {
 
     try {

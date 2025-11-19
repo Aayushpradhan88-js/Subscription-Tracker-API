@@ -11,9 +11,9 @@ import {
 
 const subscriptionroutes = Router();
 subscriptionroutes.route("/:userid").get(authMiddleware, getAllSubscriptionOfUserId);
-subscriptionroutes.route("/:id").post(authMiddleware, createSubscription)
-subscriptionroutes.route("/:id").get(authMiddleware, getSubscriptionWithId)
-subscriptionroutes.patch("/:id", (req, res) => res.send("EDITING user subscriptions"));
+subscriptionroutes.route("/:userid").post(authMiddleware, createSubscription)
+subscriptionroutes.route("/:userid").get(authMiddleware, getSubscriptionWithId)
+subscriptionroutes.patch("/:userid", (req, res) => res.send("EDITING user subscriptions"));
 subscriptionroutes.delete("/", (req, res) => res.send("Deleteing user subscriptions"));
 subscriptionroutes.put("/:id/cancel", (req, res) => res.send("CANCELLING user subscriptions"));
 subscriptionroutes.put("/up-comming renewals", (req, res) => res.send("RENEWALS user subscriptions"));

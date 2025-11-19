@@ -20,6 +20,11 @@ const userModel = new mongoose.Schema({
         trim: true,
         minLength: [6, "Password must be at least 6 characters long"],
     },
+    subsriptions: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subscription',
+        index: true,
+    }
 },
     {
         timestamps: true,
